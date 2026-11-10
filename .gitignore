@@ -1,0 +1,30 @@
+# Python
+.venv/
+.venv_clean/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Frontend
+node_modules/
+dist/
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.log
+
+desktop.ini
+prediction_response.json
+
+# Local testing images
+models/gradcam_api_overlay.png
+models/gradcam_overlay.png
+models/test_xray.png
