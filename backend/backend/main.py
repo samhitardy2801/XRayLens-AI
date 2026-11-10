@@ -11,7 +11,6 @@ from backend.backend.services.gradcam_service import generate_gradcam
 from backend.backend.services.visualization_service import create_gradcam_overlay
 
 
-# Initialize FastAPI application
 app = FastAPI(
     title="XRayLens AI",
     description="Explainable AI-powered Chest X-ray Pneumonia Detection",
@@ -19,13 +18,13 @@ app = FastAPI(
 )
 
 
-# Connect React frontend with backend
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-    "http://localhost:5173",
-    "http://localhost:5174",
-    "http://localhost:5175",
+        "http://localhost:5173",
+        "http://localhost:5174",
+        "http://localhost:5175",
+        "https://x-ray-lens-ai.vercel.app",
     ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -33,7 +32,6 @@ app.add_middleware(
 )
 
 
-# Home endpoint
 @app.get("/")
 def home():
     return {
@@ -42,7 +40,6 @@ def home():
     }
 
 
-# Health check endpoint
 @app.get("/health")
 def health_check():
     return {
@@ -51,7 +48,6 @@ def health_check():
     }
 
 
-# Prediction + Grad-CAM endpoint
 @app.post("/predict")
 async def predict(file: UploadFile = File(...)):
 
@@ -72,19 +68,15 @@ async def predict(file: UploadFile = File(...)):
 
         image = Image.open(BytesIO(contents)).convert("RGB")
 
-        # Generate prediction
         result = predict_image(image)
 
-        # Generate Grad-CAM heatmap
         cam_result = generate_gradcam(image)
 
-        # Create heatmap overlay
         overlay = create_gradcam_overlay(
             image,
             cam_result["heatmap"]
         )
 
-        # Convert overlay into Base64
         image_buffer = BytesIO()
         overlay.save(image_buffer, format="PNG")
 
@@ -112,7 +104,8 @@ async def predict(file: UploadFile = File(...)):
             detail="Invalid or corrupted image."
         )
 
-    except Exception:
+    except Exception as e:
+        print(f"Prediction error: {e}")
         raise HTTPException(
             status_code=500,
             detail="An internal error occurred while processing the image."
